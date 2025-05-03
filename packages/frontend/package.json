@@ -118,7 +118,6 @@
 		"@vue/runtime-core": "3.5.13",
 		"acorn": "8.14.1",
 		"cross-env": "7.0.3",
-		"cypress": "14.3.2",
 		"eslint-plugin-import": "2.31.0",
 		"eslint-plugin-vue": "10.0.0",
 		"fast-glob": "3.3.3",
