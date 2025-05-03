@@ -78,7 +78,8 @@
 	},
 	"pnpm": {
 		"overrides": {
-			"@aiscript-dev/aiscript-languageserver": "-"
+			"@aiscript-dev/aiscript-languageserver": "-",
+			"sharp": "0.33.5"
 		}
 	}
 }
