@@ -93,6 +93,7 @@ export class DriveService {
 	private registerLogger: Logger;
 	private downloaderLogger: Logger;
 	private deleteLogger: Logger;
+	private cacheLogger: Logger;
 
 	constructor(
 		@Inject(DI.config)
@@ -135,6 +136,7 @@ export class DriveService {
 		this.registerLogger = logger.createSubLogger('register', 'yellow');
 		this.downloaderLogger = logger.createSubLogger('downloader');
 		this.deleteLogger = logger.createSubLogger('delete');
+		this.cacheLogger = logger.createSubLogger('cache');
 	}
 
 	/***
@@ -497,7 +499,7 @@ export class DriveService {
 
 		if (user && !force) {
 		// Check if there is a file with the same hash
-			const matched = await this.driveFilesRepository.findOneBy({
+			let matched = await this.driveFilesRepository.findOneBy({
 				md5: info.md5,
 				userId: user.id,
 			});
@@ -509,6 +511,9 @@ export class DriveService {
 					// Therefore, update the file to sensitive.
 					await this.driveFilesRepository.update({ id: matched.id }, { isSensitive: true });
 					matched.isSensitive = true;
+				}
+				if (this.meta.cacheRemoteKnownMissingFiles) {
+					matched = this.cacheRemote(matched, path);
 				}
 				return matched;
 			}
@@ -909,5 +914,59 @@ export class DriveService {
 		} finally {
 			cleanup();
 		}
+	}
+
+	@bindThis
+	public async cacheRemoteById(id: MiDriveFile['id'], givenPath: string): Promise<MiDriveFile> {
+		const file = await this.driveFilesRepository.findOneBy({ id: id }) as MiDriveFile;
+		return this.cacheRemote(file);
+	}
+
+	@bindThis
+	public async cacheRemote(file: MiDriveFile, givenPath: string): Promise<MiDriveFile> {
+		if (file.storedInternal || !file.isLink) return file;
+
+		const shouldBeCached = !this.meta.useObjectStorage && this.meta.cacheRemoteFiles && (this.meta.cacheRemoteSensitiveFiles || !file.isSensitive);
+		if (!shouldBeCached) return file;
+
+		this.cacheLogger.info(`fetching: ${file.key} <- ${file.uri} (${file.type})`);
+
+		let path: string;
+		let cleanup: () => void;
+		if (givenPath) {
+			path = givenPath;
+			cleanup = () => {};
+		} else {
+			[path, cleanup] = await createTemp();
+			try {
+				await this.downloadService.downloadUrl(file.uri, path);
+			} catch (e) {
+				cleanup();
+				throw e;
+			}
+		}
+
+		try {
+			const alts = await this.generateAlts(path, file.type, !file.uri);
+			file.url = this.internalStorageService.saveFromPath(file.accessKey, path);
+			if (alts.thumbnail) {
+				file.thumbnailUrl = this.internalStorageService.saveFromBuffer(file.thumbnailAccessKey, alts.thumbnail.data);
+			} else {
+				file.thumbnailUrl = null;
+			}
+			if (alts.webpublic) {
+				file.webpublicUrl = this.internalStorageService.saveFromBuffer(file.webpublicAccessKey, alts.webpublic.data);
+			} else {
+				file.webpublicUrl = null;
+			}
+			file.storedInternal = true;
+			file.isLink = false;
+			file.size = (await fs.promises.stat(path)).size;
+			file.webpublicType = alts.webpublic?.type ?? null;
+			await this.driveFilesRepository.save(file);
+		} finally {
+			cleanup();
+		}
+		return file;
 	}
 }
