@@ -187,6 +187,11 @@ export class MiMeta {
 	@Column('boolean', {
 		default: false,
 	})
+	public cacheRemoteKnownMissingFiles: boolean;
+
+	@Column('boolean', {
+		default: false,
+	})
 	public emailRequiredForSignup: boolean;
 
 	@Column('boolean', {

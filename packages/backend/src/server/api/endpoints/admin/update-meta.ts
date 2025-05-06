@@ -69,6 +69,7 @@ export const paramDef = {
 		defaultDarkTheme: { type: 'string', nullable: true },
 		cacheRemoteFiles: { type: 'boolean' },
 		cacheRemoteSensitiveFiles: { type: 'boolean' },
+		cacheRemoteKnownMissingFiles: { type: 'boolean' },
 		emailRequiredForSignup: { type: 'boolean' },
 		enableHcaptcha: { type: 'boolean' },
 		hcaptchaSiteKey: { type: 'string', nullable: true },
@@ -320,6 +321,10 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 
 			if (ps.cacheRemoteSensitiveFiles !== undefined) {
 				set.cacheRemoteSensitiveFiles = ps.cacheRemoteSensitiveFiles;
+			}
+
+			if (ps.cacheRemoteKnownMissingFiles !== undefined) {
+				set.cacheRemoteKnownMissingFiles = ps.cacheRemoteKnownMissingFiles;
 			}
 
 			if (ps.emailRequiredForSignup !== undefined) {

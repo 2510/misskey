@@ -176,6 +176,8 @@ cacheRemoteFilesDescription: "この設定を有効にすると、リモート�
 youCanCleanRemoteFilesCache: "ファイル管理の🗑️ボタンで全てのキャッシュを削除できます。"
 cacheRemoteSensitiveFiles: "リモートのセンシティブなファイルをキャッシュする"
 cacheRemoteSensitiveFilesDescription: "この設定を無効にすると、リモートのセンシティブなファイルはキャッシュせず直リンクするようになります。"
+cacheRemoteKnownMissingFiles: "既知で未取得のファイルをキャッシュする"
+cacheRemoteKnownMissingFilesDescription: "この設定を有効にすると、既知かつ未取得のリモートのファイルを見つけたときにキャッシュします。いくつかの処理で追加の負荷が発生します。"
 flagAsBot: "Botとして設定"
 flagAsBotDescription: "このアカウントがプログラムによって運用される場合は、このフラグをオンにします。オンにすると、反応の連鎖を防ぐためのフラグとして他の開発者に役立ったり、Misskeyのシステム上での扱いがBotに合ったものになります。"
 flagAsCat: "にゃああああああああああああああ！！！！！！！！！！！！"

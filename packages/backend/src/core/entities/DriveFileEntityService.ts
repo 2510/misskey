@@ -6,7 +6,7 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { In } from 'typeorm';
 import { DI } from '@/di-symbols.js';
-import type { DriveFilesRepository } from '@/models/_.js';
+import type { DriveFilesRepository, MiMeta } from '@/models/_.js';
 import type { Config } from '@/config.js';
 import type { Packed } from '@/misc/json-schema.js';
 import { awaitAll } from '@/misc/prelude/await-all.js';
@@ -33,6 +33,9 @@ export class DriveFileEntityService {
 	constructor(
 		@Inject(DI.config)
 		private config: Config,
+
+		@Inject(DI.meta)
+		private meta: MiMeta,
 
 		@Inject(DI.driveFilesRepository)
 		private driveFilesRepository: DriveFilesRepository,
@@ -95,11 +98,14 @@ export class DriveFileEntityService {
 			return this.getProxiedUrl(file.uri, 'static');
 		}
 
-		if (file.uri != null && file.isLink && this.config.proxyRemoteFiles) {
-			// リモートかつ期限切れはローカルプロキシを試みる
-			// 従来は/files/${thumbnailAccessKey}にアクセスしていたが、
-			// /filesはメディアプロキシにリダイレクトするようにしたため直接メディアプロキシを指定する
-			return this.getProxiedUrl(file.uri, 'static');
+		const shouldBeCached = this.meta.cacheRemoteFiles && (this.meta.cacheRemoteSensitiveFiles || !image.sensitive) && this.meta.cacheRemoteKnownMissingFiles;
+		if (!shouldBeCached) {
+			if (file.uri != null && file.isLink && this.config.proxyRemoteFiles) {
+				// リモートかつ期限切れはローカルプロキシを試みる
+				// 従来は/files/${thumbnailAccessKey}にアクセスしていたが、
+				// /filesはメディアプロキシにリダイレクトするようにしたため直接メディアプロキシを指定する
+				return this.getProxiedUrl(file.uri, 'static');
+			}
 		}
 
 		const url = file.webpublicUrl ?? file.url;
@@ -114,20 +120,23 @@ export class DriveFileEntityService {
 			return this.getProxiedUrl(file.uri, mode);
 		}
 
-		// リモートかつ期限切れはローカルプロキシを試みる
-		if (file.uri != null && file.isLink && this.config.proxyRemoteFiles) {
-			const key = file.webpublicAccessKey;
+		const shouldBeCached = this.meta.cacheRemoteFiles && (this.meta.cacheRemoteSensitiveFiles || !image.sensitive) && this.meta.cacheRemoteKnownMissingFiles;
+		if (!shouldBeCached) {
+			// リモートかつ期限切れはローカルプロキシを試みる
+			if (file.uri != null && file.isLink && this.config.proxyRemoteFiles) {
+				const key = file.webpublicAccessKey;
 
-			if (key && !key.match('/')) {	// 古いものはここにオブジェクトストレージキーが入ってるので除外
-				const url = `${this.config.url}/files/${key}`;
-				if (mode === 'avatar') return this.getProxiedUrl(file.uri, 'avatar');
-				return url;
+				if (key && !key.match('/')) {	// 古いものはここにオブジェクトストレージキーが入ってるので除外
+					const url = `${this.config.url}/files/${key}`;
+					if (mode === 'avatar') return this.getProxiedUrl(file.uri, 'avatar');
+					return url;
+				}
 			}
 		}
 
 		const url = file.webpublicUrl ?? file.url;
 
-		if (mode === 'avatar') {
+		if (!this.meta.cacheRemoteKnownMissingFiles && mode === 'avatar') {
 			return this.getProxiedUrl(url, 'avatar');
 		}
 		return url;
