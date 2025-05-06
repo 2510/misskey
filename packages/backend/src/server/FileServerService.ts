@@ -11,7 +11,7 @@ import rename from 'rename';
 import sharp from 'sharp';
 import { sharpBmp } from '@misskey-dev/sharp-read-bmp';
 import type { Config } from '@/config.js';
-import type { MiDriveFile, DriveFilesRepository } from '@/models/_.js';
+import type { MiDriveFile, DriveFilesRepository, MiMeta } from '@/models/_.js';
 import { DI } from '@/di-symbols.js';
 import { createTemp } from '@/misc/create-temp.js';
 import { FILE_TYPE_BROWSERSAFE } from '@/const.js';
@@ -22,8 +22,10 @@ import { IImageStreamable, ImageProcessingService, webpDefault } from '@/core/Im
 import { VideoProcessingService } from '@/core/VideoProcessingService.js';
 import { InternalStorageService } from '@/core/InternalStorageService.js';
 import { contentDisposition } from '@/misc/content-disposition.js';
+import { DriveService } from '@/core/DriveService.js';
 import { FileInfoService } from '@/core/FileInfoService.js';
 import { LoggerService } from '@/core/LoggerService.js';
+import { DriveFileEntityService } from '@/core/entities/DriveFileEntityService.js';
 import { bindThis } from '@/decorators.js';
 import { isMimeImage } from '@/misc/is-mime-image.js';
 import { correctFilename } from '@/misc/correct-filename.js';
@@ -43,6 +45,9 @@ export class FileServerService {
 		@Inject(DI.config)
 		private config: Config,
 
+		@Inject(DI.meta)
+		private meta: MiMeta,
+
 		@Inject(DI.driveFilesRepository)
 		private driveFilesRepository: DriveFilesRepository,
 
@@ -52,6 +57,8 @@ export class FileServerService {
 		private videoProcessingService: VideoProcessingService,
 		private internalStorageService: InternalStorageService,
 		private loggerService: LoggerService,
+		private driveService: DriveService,
+		private driveFileEntityService: DriveFileEntityService,
 	) {
 		this.logger = this.loggerService.getLogger('server', 'gray');
 
@@ -525,7 +532,7 @@ export class FileServerService {
 		| '204'
 	> {
 		// Fetch drive file
-		const file = await this.driveFilesRepository.createQueryBuilder('file')
+		let file = await this.driveFilesRepository.createQueryBuilder('file')
 			.where('file.accessKey = :accessKey', { accessKey: key })
 			.orWhere('file.thumbnailAccessKey = :thumbnailAccessKey', { thumbnailAccessKey: key })
 			.orWhere('file.webpublicAccessKey = :webpublicAccessKey', { webpublicAccessKey: key })
@@ -536,6 +543,9 @@ export class FileServerService {
 		const isThumbnail = file.thumbnailAccessKey === key;
 		const isWebpublic = file.webpublicAccessKey === key;
 
+		if (!file.storedInternal && this.meta.cacheRemoteKnownMissingFiles) {
+			file = await this.driveService.cacheRemote(file);
+		}
 		if (!file.storedInternal) {
 			if (!(file.isLink && file.uri)) return '204';
 			const result = await this.downloadAndDetectTypeFromUrl(file.uri);

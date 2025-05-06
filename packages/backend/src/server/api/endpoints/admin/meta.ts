@@ -30,6 +30,10 @@ export const meta = {
 				type: 'boolean',
 				optional: false, nullable: false,
 			},
+			cacheRemoteKnownMissingFiles: {
+				type: 'boolean',
+				optional: false, nullable: false,
+			},
 			emailRequiredForSignup: {
 				type: 'boolean',
 				optional: false, nullable: false,
@@ -670,6 +674,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				translatorAvailable: instance.deeplAuthKey != null,
 				cacheRemoteFiles: instance.cacheRemoteFiles,
 				cacheRemoteSensitiveFiles: instance.cacheRemoteSensitiveFiles,
+				cacheRemoteKnownMissingFiles: instance.cacheRemoteKnownMissingFiles,
 				pinnedUsers: instance.pinnedUsers,
 				hiddenTags: instance.hiddenTags,
 				blockedHosts: instance.blockedHosts,

@@ -61,6 +61,7 @@ async function nullIfEntityNotFound<T>(promise: Promise<T>): Promise<T | null> {
 export class NoteEntityService implements OnModuleInit {
 	private userEntityService: UserEntityService;
 	private driveFileEntityService: DriveFileEntityService;
+	private driveService: DriveService;
 	private customEmojiService: CustomEmojiService;
 	private reactionService: ReactionService;
 	private reactionsBufferingService: ReactionsBufferingService;
@@ -95,6 +96,7 @@ export class NoteEntityService implements OnModuleInit {
 		private channelsRepository: ChannelsRepository,
 
 		//private userEntityService: UserEntityService,
+		//private driveService: DriveService,
 		//private driveFileEntityService: DriveFileEntityService,
 		//private customEmojiService: CustomEmojiService,
 		//private reactionService: ReactionService,
@@ -105,6 +107,7 @@ export class NoteEntityService implements OnModuleInit {
 
 	onModuleInit() {
 		this.userEntityService = this.moduleRef.get('UserEntityService');
+		this.driveService = this.moduleRef.get('DriveService');
 		this.driveFileEntityService = this.moduleRef.get('DriveFileEntityService');
 		this.customEmojiService = this.moduleRef.get('CustomEmojiService');
 		this.reactionService = this.moduleRef.get('ReactionService');
@@ -556,6 +559,11 @@ export class NoteEntityService implements OnModuleInit {
 		await this.customEmojiService.prefetchEmojis(this.aggregateNoteEmojis(notes));
 		// TODO: 本当は renote とか reply がないのに renoteId とか replyId があったらここで解決しておく
 		const fileIds = notes.map(n => [n.fileIds, n.renote?.fileIds, n.reply?.fileIds]).flat(2).filter(x => x != null);
+		if (this.meta.cacheRemoteKnownMissingFiles) {
+			await Promise.all(fileIds.map(fileId => {
+				this.driveService.cacheRemoteById(fileId)
+			}));
+		}
 		const packedFiles = fileIds.length > 0 ? await this.driveFileEntityService.packManyByIdsMap(fileIds) : new Map();
 		const users = [
 			...notes.map(({ user, userId }) => user ?? userId),

@@ -339,6 +339,15 @@ SPDX-License-Identifier: AGPL-3.0-only
 									</MkSwitch>
 								</SearchMarker>
 							</template>
+
+							<template v-if="federationForm.state.cacheRemoteKnownMissingFiles">
+								<SearchMarker :keywords="['cache', 'remote', 'known', 'missing', 'files']">
+									<MkSwitch v-model="federationForm.state.cacheRemoteKnownMissingFiles">
+										<template #label><SearchLabel>{{ i18n.ts.cacheRemoteKnownMissingFiles }}</SearchLabel><span v-if="federationForm.modifiedStates.cacheRemoteKnownMissingFiles" class="_modified">{{ i18n.ts.modified }}</span></template>
+										<template #caption><SearchText>{{ i18n.ts.cacheRemoteKnownMissingFilesDescription }}</SearchText></template>
+									</MkSwitch>
+								</SearchMarker>
+							</template>
 						</div>
 					</MkFolder>
 				</SearchMarker>
@@ -483,6 +492,7 @@ const federationForm = useForm({
 	allowExternalApRedirect: meta.allowExternalApRedirect,
 	cacheRemoteFiles: meta.cacheRemoteFiles,
 	cacheRemoteSensitiveFiles: meta.cacheRemoteSensitiveFiles,
+	cacheRemoteKnownMissingFiles: meta.cacheRemoteKnownMissingFiles,
 }, async (state) => {
 	await os.apiWithDialog('admin/update-meta', {
 		federation: state.federation,
@@ -493,6 +503,7 @@ const federationForm = useForm({
 		allowExternalApRedirect: state.allowExternalApRedirect,
 		cacheRemoteFiles: state.cacheRemoteFiles,
 		cacheRemoteSensitiveFiles: state.cacheRemoteSensitiveFiles,
+		cacheRemoteKnownMissingFiles: state.cacheRemoteKnownMissingFiles,
 	});
 	fetchInstance(true);
 });
