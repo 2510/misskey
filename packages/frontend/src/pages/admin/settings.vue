@@ -104,6 +104,11 @@ SPDX-License-Identifier: AGPL-3.0-only
 							<template #label>{{ i18n.ts.cacheRemoteSensitiveFiles }}<span v-if="filesForm.modifiedStates.cacheRemoteSensitiveFiles" class="_modified">{{ i18n.ts.modified }}</span></template>
 							<template #caption>{{ i18n.ts.cacheRemoteSensitiveFilesDescription }}</template>
 						</MkSwitch>
+
+						<MkSwitch v-model="filesForm.state.cacheRemoteKnownMissingFiles">
+							<template #label>{{ i18n.ts.cacheRemoteKnownMissingFiles }}<span v-if="filesForm.modifiedStates.cacheRemoteKnownMissingFiles" class="_modified">{{ i18n.ts.modified }}</span></template>
+							<template #caption>{{ i18n.ts.cacheRemoteKnownMissingFilesDescription }}</template>
+						</MkSwitch>
 					</template>
 				</div>
 			</MkFolder>
@@ -316,10 +321,12 @@ const pinnedUsersForm = useForm({
 const filesForm = useForm({
 	cacheRemoteFiles: meta.cacheRemoteFiles,
 	cacheRemoteSensitiveFiles: meta.cacheRemoteSensitiveFiles,
+	cacheRemoteKnownMissingFiles: meta.cacheRemoteKnownMissingFiles,
 }, async (state) => {
 	await os.apiWithDialog('admin/update-meta', {
 		cacheRemoteFiles: state.cacheRemoteFiles,
 		cacheRemoteSensitiveFiles: state.cacheRemoteSensitiveFiles,
+		cacheRemoteKnownMissingFiles: state.cacheRemoteKnownMissingFiles,
 	});
 	fetchInstance(true);
 });

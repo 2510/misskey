@@ -723,6 +723,14 @@ export interface Locale extends ILocale {
      */
     "cacheRemoteSensitiveFilesDescription": string;
     /**
+     * 既知で未取得のファイルをキャッシュする
+     */
+    "cacheRemoteKnownMissingFiles": string;
+    /**
+     * この設定を有効にすると、既知かつ未取得のリモートのファイルを見つけたときにキャッシュします。いくつかの処理で追加の負荷が発生します。
+     */
+    "cacheRemoteKnownMissingFilesDescription": string;
+    /**
      * Botとして設定
      */
     "flagAsBot": string;
