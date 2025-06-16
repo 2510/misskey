@@ -188,6 +188,8 @@
 - Fix: 大文字を含むユーザの URL で照会された場合に 404 エラーを返す問題 #15813
 - Fix: リードレプリカ設定時にレコードの追加・更新・削除を伴うクエリを発行した際はmasterノードで実行されるように調整( #10897 )
 - Fix: ファイルアップロード時の挙動を一部調整(#15895)
+- Fix: FreeBSDで起動できない問題を修正  
+  (Cherry-picked from https://activitypub.software/TransFem-org/Sharkey/-/merge_requests/887)
 
 ## 2025.4.0
 
@@ -303,6 +305,8 @@
 - Fix: 特定のケースでActivityPubの処理がデッドロックになることがあるのを修正
 - Fix: S3互換オブジェクトストレージでファイルのアップロードに失敗することがある問題を修正  
   (Cherry-picked from https://github.com/MisskeyIO/misskey/pull/895)
+- Fix: FreeBSDで起動できない問題を修正  
+  (Cherry-picked from https://activitypub.software/TransFem-org/Sharkey/-/merge_requests/887)
 
 
 ## 2025.2.1
