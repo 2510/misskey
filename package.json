@@ -83,6 +83,7 @@
 			"@aiscript-dev/aiscript-languageserver": "-",
 			"chokidar": "5.0.0",
 			"lodash": "4.17.23",
+			"rollup": "npm:@rollup/wasm-node",
 			"sharp": "0.33.5"
 		},
 		"ignoredBuiltDependencies": [
