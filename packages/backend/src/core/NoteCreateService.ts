@@ -556,11 +556,14 @@ export class NoteCreateService implements OnApplicationShutdown {
 					for (const following of followings) {
 						// TODO: ワードミュート考慮
 						let isRenoteMuted = false;
+						/*
 						if (isPureRenote) {
 							const userIdsWhoMeMutingRenotes = await this.cacheService.renoteMutingsCache.fetch(following.followerId);
 							isRenoteMuted = userIdsWhoMeMutingRenotes.has(user.id);
 						}
 						if (!isRenoteMuted) {
+						*/
+						if (!isPureRenote) {
 							this.notificationService.createNotification(following.followerId, 'note', {
 								noteId: note.id,
 							}, user.id);
