@@ -116,6 +116,7 @@ export const userPreviewDirective = {
 	mounted(el, binding) {
 		if (binding.value == null) return;
 		if (isTouchUsing) return;
+		return; // disable user preview completely
 
 		// TODO: 新たにプロパティを作るのをやめMapを使う
 		// ただメモリ的には↓の方が省メモリかもしれないので検討中
