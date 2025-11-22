@@ -28,6 +28,7 @@ switch (command) {
 		console.log('Available commands:');
 		console.log('  help - Displays this help message');
 		console.log('  reset-captcha - Resets the captcha');
+		console.log('  unfollow-from-proxy - Unfollow all users followed by the proxy account');
 		break;
 	}
 	case 'ping': {
@@ -39,6 +40,11 @@ switch (command) {
 		console.log('Captcha has been reset.');
 		break;
 	}
+    case 'unfollow-from-proxy': {
+		await commandService.unfollowFromProxy();
+		console.log('Requested unfollows from proxy account.');
+		break;
+    }
 	default: {
 		console.error(`Unrecognized command: ${command}`);
 		console.error('Use "help" to see available commands.');
