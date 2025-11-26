@@ -8,8 +8,6 @@ import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
 import * as yaml from 'js-yaml';
 import { type FastifyServerOptions } from 'fastify';
-import type * as Sentry from '@sentry/node';
-import type * as SentryVue from '@sentry/vue';
 import type { RedisOptions } from 'ioredis';
 
 type RedisOptionsSource = Partial<RedisOptions> & {
@@ -63,13 +61,6 @@ type Source = {
 		ssl?: boolean;
 		index: string;
 		scope?: 'local' | 'global' | string[];
-	};
-	sentryForBackend?: { options: Partial<Sentry.NodeOptions>; enableNodeProfiling: boolean; };
-	sentryForFrontend?: {
-		options: Partial<SentryVue.BrowserOptions> & { dsn: string };
-		vueIntegration?: SentryVue.VueIntegrationOptions | null;
-		browserTracingIntegration?: Parameters<typeof SentryVue.browserTracingIntegration>[0] | null;
-		replayIntegration?: Parameters<typeof SentryVue.replayIntegration>[0] | null;
 	};
 
 	publishTarballInsteadOfProvideRepositoryUrl?: boolean;
@@ -199,13 +190,6 @@ export type Config = {
 	redisForJobQueue: RedisOptions & RedisOptionsSource;
 	redisForTimelines: RedisOptions & RedisOptionsSource;
 	redisForReactions: RedisOptions & RedisOptionsSource;
-	sentryForBackend: { options: Partial<Sentry.NodeOptions>; enableNodeProfiling: boolean; } | undefined;
-	sentryForFrontend: {
-		options: Partial<SentryVue.BrowserOptions> & { dsn: string };
-		vueIntegration?: SentryVue.VueIntegrationOptions | null;
-		browserTracingIntegration?: Parameters<typeof SentryVue.browserTracingIntegration>[0] | null;
-		replayIntegration?: Parameters<typeof SentryVue.replayIntegration>[0] | null;
-	} | undefined;
 	perChannelMaxNoteCacheCount: number;
 	perUserNotificationsMaxCount: number;
 	deactivateAntennaThreshold: number;
@@ -290,8 +274,6 @@ export function loadConfig(): Config {
 		redisForJobQueue: config.redisForJobQueue ? convertRedisOptions(config.redisForJobQueue, host) : redis,
 		redisForTimelines: config.redisForTimelines ? convertRedisOptions(config.redisForTimelines, host) : redis,
 		redisForReactions: config.redisForReactions ? convertRedisOptions(config.redisForReactions, host) : redis,
-		sentryForBackend: config.sentryForBackend,
-		sentryForFrontend: config.sentryForFrontend,
 		id: config.id,
 		proxy: config.proxy,
 		proxySmtp: config.proxySmtp,

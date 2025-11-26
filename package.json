@@ -86,7 +86,6 @@
 			"rollup": "npm:@rollup/wasm-node"
 		},
 		"ignoredBuiltDependencies": [
-			"@sentry-internal/node-cpu-profiler",
 			"exifreader"
 		]
 	}
