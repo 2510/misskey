@@ -725,6 +725,14 @@ export interface Locale extends ILocale {
      */
     "cacheRemoteSensitiveFilesDescription": string;
     /**
+     * センシティブな投稿とリノートを禁止
+     */
+    "flagIsInsensitive": string;
+    /**
+     * センシティブな内容を含む投稿を禁止し、センシティブな内容を含む投稿のリノートを禁止します。本文中のCWとセンシティブなメディアが対象です。
+     */
+    "flagIsInsensitiveDescription": string;
+    /**
      * Botとして設定
      */
     "flagAsBot": string;

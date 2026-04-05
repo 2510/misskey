@@ -178,6 +178,8 @@ cacheRemoteFilesDescription: "この設定を有効にすると、リモート�
 youCanCleanRemoteFilesCache: "ファイル管理の🗑️ボタンで全てのキャッシュを削除できます。"
 cacheRemoteSensitiveFiles: "リモートのセンシティブなファイルをキャッシュする"
 cacheRemoteSensitiveFilesDescription: "この設定を無効にすると、リモートのセンシティブなファイルはキャッシュせず直リンクするようになります。"
+flagIsInsensitive: "センシティブな投稿とリノートを禁止"
+flagIsInsensitiveDescription: "センシティブな内容を含む投稿を禁止し、センシティブな内容を含む投稿のリノートを禁止します。本文中のCWとセンシティブなメディアが対象です。"
 flagAsBot: "Botとして設定"
 flagAsBotDescription: "このアカウントがプログラムによって運用される場合は、このフラグをオンにします。オンにすると、反応の連鎖を防ぐためのフラグとして他の開発者に役立ったり、Misskeyのシステム上での扱いがBotに合ったものになります。"
 flagAsCat: "にゃああああああああああああああ！！！！！！！！！！！！"

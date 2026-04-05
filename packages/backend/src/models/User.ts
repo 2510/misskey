@@ -224,6 +224,12 @@ export class MiUser {
 	})
 	public isDeleted: boolean;
 
+	// CW付きやセンシティブなメディアを含むノートを送信したり、リノートできなくするフラグ
+	@Column('boolean', {
+		default: false,
+	})
+	public isInsensitive: boolean;
+
 	@Column('varchar', {
 		length: 128, array: true, default: '{}',
 	})

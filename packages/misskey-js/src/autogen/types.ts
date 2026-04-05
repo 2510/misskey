@@ -3997,6 +3997,7 @@ export type components = {
                 offsetX?: number;
                 offsetY?: number;
             }[];
+            isInsensitive?: boolean;
             isBot?: boolean;
             isCat?: boolean;
             requireSigninToViewContents?: boolean;

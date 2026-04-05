@@ -127,6 +127,13 @@ SPDX-License-Identifier: AGPL-3.0-only
 			</MkSelect>
 		</SearchMarker>
 
+		<SearchMarker :keywords="['cat']">
+			<MkSwitch v-model="profile.isInsensitive">
+				<template #label><SearchLabel>{{ i18n.ts.flagIsInsensitive }}</SearchLabel></template>
+				<template #caption>{{ i18n.ts.flagIsInsensitiveDescription }}</template>
+			</MkSwitch>
+		</SearchMarker>
+
 		<SearchMarker>
 			<MkFolder>
 				<template #label><SearchLabel>{{ i18n.ts.advancedSettings }}</SearchLabel></template>
@@ -200,6 +207,7 @@ const profile = reactive({
 	location: $i.location,
 	birthday: $i.birthday,
 	lang: assertVaildLang($i.lang) ? $i.lang : null,
+	isInsensitive: $i.isInsensitive ?? false,
 	isBot: $i.isBot ?? false,
 	isCat: $i.isCat ?? false,
 });
@@ -250,6 +258,7 @@ function save() {
 		birthday: profile.birthday || null,
 		// eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
 		lang: profile.lang || null,
+		isInsensitive: !!profile.isInsensitive,
 		isBot: !!profile.isBot,
 		isCat: !!profile.isCat,
 	}, undefined, {

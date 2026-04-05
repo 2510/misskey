@@ -107,6 +107,10 @@ export const packedUserLiteSchema = {
 				},
 			},
 		},
+		isInsensitive: {
+			type: 'boolean',
+			nullable: false, optional: true,
+		},
 		isBot: {
 			type: 'boolean',
 			nullable: false, optional: true,

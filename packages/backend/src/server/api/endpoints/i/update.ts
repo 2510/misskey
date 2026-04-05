@@ -182,6 +182,7 @@ export const paramDef = {
 		requireSigninToViewContents: { type: 'boolean' },
 		makeNotesFollowersOnlyBefore: { type: 'integer', nullable: true },
 		makeNotesHiddenBefore: { type: 'integer', nullable: true },
+		isInsensitive: { type: 'boolean' },
 		isBot: { type: 'boolean' },
 		isCat: { type: 'boolean' },
 		injectFeaturedNote: { type: 'boolean' },
@@ -349,6 +350,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 			if (typeof ps.isExplorable === 'boolean') updates.isExplorable = ps.isExplorable;
 			if (typeof ps.hideOnlineStatus === 'boolean') updates.hideOnlineStatus = ps.hideOnlineStatus;
 			if (typeof ps.publicReactions === 'boolean') profileUpdates.publicReactions = ps.publicReactions;
+			if (typeof ps.isInsensitive === 'boolean') updates.isInsensitive = ps.isInsensitive;
 			if (typeof ps.isBot === 'boolean') updates.isBot = ps.isBot;
 			if (typeof ps.carefulBot === 'boolean') profileUpdates.carefulBot = ps.carefulBot;
 			if (typeof ps.autoAcceptFollowed === 'boolean') profileUpdates.autoAcceptFollowed = ps.autoAcceptFollowed;

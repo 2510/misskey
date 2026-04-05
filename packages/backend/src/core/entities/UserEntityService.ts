@@ -497,6 +497,7 @@ export class UserEntityService implements OnModuleInit {
 				offsetY: ud.offsetY || undefined,
 				url: decorations.find(d => d.id === ud.id)!.url,
 			}))) : [],
+			isInsensitive: user.isInsensitive,
 			isBot: user.isBot,
 			isCat: user.isCat,
 			requireSigninToViewContents: user.requireSigninToViewContents === false ? undefined : true,

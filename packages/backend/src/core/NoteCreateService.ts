@@ -483,6 +483,24 @@ export class NoteCreateService implements OnApplicationShutdown {
 			}
 		}
 
+		// センシティブを禁止している場合、投稿またはリノートがセンシティブならエラー
+		if (user.isInsensitive) {
+			if (data.cw || data.files?.some(file => file.isSensitive)) {
+				throw new Error('sensitive');
+			}
+			if (data.renote) {
+				const sensitiveFileCount = await this.driveFilesRepository.count({
+					where: {
+						id: In(data.renote.fileIds),
+						isSensitive: true
+					}
+				});
+				if (sensitiveFileCount > 0) {
+					throw new Error('sensitive');
+				}
+			}
+		}
+
 		// 返信対象がpublicではないならhomeにする
 		if (data.reply && data.reply.visibility !== 'public' && data.visibility === 'public') {
 			data.visibility = 'home';
