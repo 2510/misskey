@@ -75,6 +75,7 @@ export default defineConfig((args) => {
 		'ipaddr.js',
 		'oauth2orize',
 		'file-type',
+		'canvas',
 	];
 
 	if (isE2E) {
