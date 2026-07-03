@@ -125,7 +125,12 @@ export default class Logger {
 		}
 		console.log(...args);
 
-		this.logQueue.push({ _timestamp: now.getTime() * 1000, worker, level, message, data, important, subContexts });
+		this.logQueue.push({
+			_timestamp: now.getTime() * 1000,
+			worker, level, message, data, important,
+			context: this.context.name,
+			contexts: [this.context].concat(subContexts).map(x => x.name)
+		});
 	}
 
 	@bindThis
