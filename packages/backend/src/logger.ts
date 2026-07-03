@@ -7,6 +7,9 @@ import cluster from 'node:cluster';
 import chalk from 'chalk';
 import { default as convertColor } from 'color-convert';
 import { format as dateFormat } from 'date-fns';
+import fetch from 'node-fetch';
+import * as http from 'node:http';
+import { setTimeout } from 'node:timers/promises';
 import { bindThis } from '@/decorators.js';
 import { envOption } from './env.js';
 import type { Keyword } from 'color-convert';
@@ -22,12 +25,16 @@ type Level = 'error' | 'success' | 'warning' | 'debug' | 'info';
 export default class Logger {
 	private context: Context;
 	private parentLogger: Logger | null = null;
+	private logQueue: any[] = [];
 
 	constructor(context: string, color?: Keyword) {
 		this.context = {
 			name: context,
 			color: color,
 		};
+		if (process.env.LOG_URL) {
+			this.sendLogLoop(); // don't await
+		}
 	}
 
 	@bindThis
@@ -35,6 +42,50 @@ export default class Logger {
 		const logger = new Logger(context, color);
 		logger.parentLogger = this;
 		return logger;
+	}
+
+	@bindThis
+	private async sendLogLoop(): void {
+		const httpAgent = http.Agent({
+			keepAlive: true,
+			keepAliveMsecs: 300 * 1000,
+			maxSockets: 2,
+			maxFreeSockets: 2,
+			scheduling: 'lifo',
+		});
+		const headers = {
+			'Content-Type': 'application/json',
+			'Authorization': `Basic ${btoa(`${process.env.LOG_USER}:${process.env.LOG_PASSWORD}`)}`,
+		};
+		const batchSize = 20;
+		var loggedError: number = 0;
+		while (true) {
+			const sending: any[] = this.logQueue.splice(0, batchSize);
+			if (sending.length > 0) {
+				while (true) {
+					try {
+						const response = await fetch(process.env.LOG_URL, {
+							method: 'POST',
+							headers: headers,
+							body: JSON.stringify(sending),
+							agent: httpAgent,
+						});
+						if (!response.ok) {
+							throw new Error(`Sending log failed with status code ${response.status}, ${response.statusText}`);
+						}
+						break;
+					} catch (e) {
+						if (loggedError < 5) {
+							loggedError++;
+							console.log(e);
+						}
+						await setTimeout(5000);
+					}
+				}
+			} else {
+				await setTimeout(1000);
+			}
+		}
 	}
 
 	@bindThis
@@ -46,7 +97,8 @@ export default class Logger {
 			return;
 		}
 
-		const time = dateFormat(new Date(), 'HH:mm:ss');
+		const now = new Date();
+		const time = dateFormat(now, 'HH:mm:ss');
 		const worker = cluster.isPrimary ? '*' : cluster.worker!.id;
 		const l =
 			level === 'error' ? important ? chalk.bgRed.white('ERR ') : chalk.red('ERR ') :
@@ -72,6 +124,8 @@ export default class Logger {
 			args.push(data);
 		}
 		console.log(...args);
+
+		this.logQueue.push({ _timestamp: now.getTime() * 1000, worker, level, message, data, important, subContexts });
 	}
 
 	@bindThis
