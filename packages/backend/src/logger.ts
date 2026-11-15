@@ -105,11 +105,11 @@ export default class Logger {
 							loggedError++;
 							console.log(e);
 						}
-						await setTimeout(5000);
+						await setTimeout(5000, undefined, { ref: false });
 					}
 				}
 			} else {
-				await setTimeout(1000);
+				await setTimeout(1000, undefined, { ref: false });
 			}
 		}
 	}
