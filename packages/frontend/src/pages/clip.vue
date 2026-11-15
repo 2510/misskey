@@ -109,38 +109,40 @@ async function unfavorite() {
 const headerActions = computed<PageHeaderItem[] | null>(() => clip.value && isOwned.value ? [{
 	icon: 'ti ti-pencil',
 	text: i18n.ts.edit,
-	handler: async (): Promise<void> => {
-		if (clip.value == null) return;
+	handler: (): void => {
+		(async (): Promise<void> => {
+			if (clip.value == null) return;
 
-		const { canceled, result } = await os.form(clip.value.name, {
-			name: {
-				type: 'string',
-				label: i18n.ts.name,
-				default: clip.value.name,
-			},
-			description: {
-				type: 'string',
-				required: false,
-				multiline: true,
-				treatAsMfm: true,
-				label: i18n.ts.description,
-				default: clip.value.description,
-			},
-			isPublic: {
-				type: 'boolean',
-				label: i18n.ts.public,
-				default: clip.value.isPublic,
-			},
-		});
+			const { canceled, result } = await os.form(clip.value.name, {
+				name: {
+					type: 'string',
+					label: i18n.ts.name,
+					default: clip.value.name,
+				},
+				description: {
+					type: 'string',
+					required: false,
+					multiline: true,
+					treatAsMfm: true,
+					label: i18n.ts.description,
+					default: clip.value.description,
+				},
+				isPublic: {
+					type: 'boolean',
+					label: i18n.ts.public,
+					default: clip.value.isPublic,
+				},
+			});
 
-		if (canceled) return;
+			if (canceled) return;
 
-		os.apiWithDialog('clips/update', {
-			clipId: clip.value.id,
-			...result,
-		});
+			os.apiWithDialog('clips/update', {
+				clipId: clip.value.id,
+				...result,
+			});
 
-		clipsCache.delete();
+			clipsCache.delete();
+		})();
 	},
 }, ...(clip.value.isPublic ? [{
 	icon: 'ti ti-share',
@@ -182,20 +184,22 @@ const headerActions = computed<PageHeaderItem[] | null>(() => clip.value && isOw
 	icon: 'ti ti-trash',
 	text: i18n.ts.delete,
 	danger: true,
-	handler: async (): Promise<void> => {
-		if (clip.value == null) return;
+	handler: (ev): void => {
+		(async (): Promise<void> => {
+			if (clip.value == null) return;
 
-		const { canceled } = await os.confirm({
-			type: 'warning',
-			text: i18n.tsx.deleteAreYouSure({ x: clip.value.name }),
-		});
-		if (canceled) return;
+			const { canceled } = await os.confirm({
+				type: 'warning',
+				text: i18n.tsx.deleteAreYouSure({ x: clip.value.name }),
+			});
+			if (canceled) return;
 
-		await os.apiWithDialog('clips/delete', {
-			clipId: clip.value.id,
-		});
+			await os.apiWithDialog('clips/delete', {
+				clipId: clip.value.id,
+			});
 
-		clipsCache.delete();
+			clipsCache.delete();
+		})();
 	},
 }] satisfies PageHeaderItem[] : null);
 
