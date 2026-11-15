@@ -127,7 +127,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 			</MkSelect>
 		</SearchMarker>
 
-		<SearchMarker :keywords="['cat']">
+		<SearchMarker :keywords="['insensitive']">
 			<MkSwitch v-model="profile.isInsensitive">
 				<template #label><SearchLabel>{{ i18n.ts.flagIsInsensitive }}</SearchLabel></template>
 				<template #caption>{{ i18n.ts.flagIsInsensitiveDescription }}</template>
